@@ -1,0 +1,85 @@
+# win-phone-mode configuration.
+# Every key is optional; omitted keys keep the default shown here.
+# Unknown keys are rejected so a typo cannot silently disable a feature.
+
+# Windows services that must survive the switch (short names, not display
+# names). Active services are left running; stopped ones are started.
+keep_services = ["OpenCodeServe", "OpenCodeTelegram"]
+
+# Radio types left alone. Bluetooth and WWAN are the ones this tool can block;
+# anything else in this list is simply never touched.
+keep_radios_on = ["wlan"]
+
+# --- desktop ----------------------------------------------------------------
+# Windows has no multi-user.target. "Phone mode" here means the desktop shell
+# is stopped so the session has no UI, while services keep running.
+manage_desktop = true
+desktop_shell = "explorer.exe"
+
+# --- display ----------------------------------------------------------------
+manage_display = true
+# Brightness percentage, 0-100. -1 leaves it untouched.
+brightness = 0
+
+# Turn the panel off quickly. 0 means "never"; 60 is one minute.
+manage_display_timeout = true
+monitor_off_seconds = 60
+
+# --- power ------------------------------------------------------------------
+manage_power_scheme = true
+# "saver", "balanced", "performance", or a scheme GUID.
+power_scheme = "saver"
+
+# Cap the CPU with the processor-maximum power setting (1-100%).
+manage_cpu = true
+cpu_max_percent = 40
+
+# Processor performance boost mode.
+manage_turbo = true
+turbo = false
+
+# Keep the machine awake on AC so a sleeping box cannot miss messages.
+manage_sleep = true
+
+# Lid close action: ignore, sleep, hibernate, shutdown.
+manage_lid = true
+lid_action = "ignore"
+
+# --- devices ----------------------------------------------------------------
+manage_radios = true
+
+# Disable non-primary display adapters. Off by default: it can blank a
+# multi-monitor setup and some laptops will not bring the dGPU back cleanly.
+disable_dgpu = false
+
+manage_services = true
+
+# Stop the desktop shell (explorer.exe) while in phone mode. This is the only
+# part of phone mode a user can see: with it off, the session keeps its UI and
+# only the power and radio settings change.
+isolate_desktop = true
+
+# Refuse to go headless below this battery percentage while discharging.
+# 0 disables the guard.
+battery_exit_percent = 15
+
+[idle]
+# Quiet-time profile: lowers the CPU ceiling after the bot log has been quiet.
+# It never sleeps the machine, because a sleeping box cannot answer messages.
+enabled = true
+quiet_minutes = 10
+cpu_max_percent = 20
+# Directory containing bot-*.log. Empty uses %APPDATA%\opencode-telegram-bot\logs.
+activity_log_dir = ""
+
+[restore]
+# Used only when "off" runs without a state file. With a state file present,
+# "off" restores the recorded values exactly and ignores this table.
+brightness = 100
+power_scheme = ""
+cpu_max_percent = 100
+turbo = true
+lid_action = "sleep"
+bluetooth = true
+services_running = true
+desktop_shell = true

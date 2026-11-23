@@ -7,7 +7,7 @@ GO ?= go
 IDLE_SERVICE := opencode-phone-mode-idle.service
 IDLE_TIMER := opencode-phone-mode-idle.timer
 
-.PHONY: build test check install install-idle-timer clean
+.PHONY: build test check install install-idle-timer clean windows windows-check windows-install
 
 build:
 	$(GO) build -trimpath -o $(BINARY) .
@@ -39,3 +39,14 @@ install-idle-timer: build
 
 clean:
 	rm -f $(BINARY)
+
+# The Windows port is a separate Go module under windows/, so it never affects
+# the Linux build above. These targets are thin wrappers for convenience.
+windows:
+	$(MAKE) -C windows build
+
+windows-check:
+	$(MAKE) -C windows check
+
+windows-install:
+	$(MAKE) -C windows install
