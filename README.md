@@ -1,13 +1,26 @@
 # opencode-phone-mode
 
-Switch a Linux laptop between its graphical desktop and a headless phone mode
-for piloting OpenCode from a phone.
+Switch a laptop between its graphical desktop and a headless phone mode for
+piloting OpenCode from a phone, then restore its exact prior state.
 
 Phone mode snapshots every setting it touches, applies the power and radio
-changes, and then isolates `multi-user.target`. Running `off` restores the
-snapshot byte-for-byte and deletes it.
+changes, and removes the desktop. Running `off` restores the snapshot
+byte-for-byte and deletes it.
 
-## Requirements
+Supported platforms:
+
+| | Linux | Windows |
+|---|---|---|
+| Directory | `.` (this root) | [`windows/`](windows/) |
+| Session switch | `systemctl isolate multi-user.target` | stop `explorer.exe` |
+| Restore model | identical | identical |
+
+Both share the same architecture -- read every setting, write a snapshot,
+apply a plan of changes, then write the snapshot back verbatim on the way out
+-- so the restore guarantees are the same on both. The mechanisms differ and
+are listed in [windows/README.md](windows/README.md).
+
+## Requirements (Linux)
 
 - Linux with systemd, sysfs cpufreq, and `rfkill`
 - `sudo` for `on` and `off` (reads for `status` do not need it)
@@ -23,6 +36,26 @@ make install
 
 This installs `~/.local/bin/opencode-phone-mode` and writes a default
 `~/.config/opencode-phone-mode/config.toml` if one does not exist yet.
+
+## Windows
+
+The Windows build lives in [`windows/`](windows/) and is a separate Go module,
+so neither build affects the other:
+
+```powershell
+cd windows
+make check     # vet + tests, on any OS
+make install   # copies the exe and win.ps1 to %LOCALAPPDATA%\Programs\win-phone-mode
+```
+
+The first `win-phone-mode on` writes
+`%APPDATA%\win-phone-mode\config.toml`. Settings, caveats, and the
+Linux-to-Windows mechanism mapping are documented in
+[windows/README.md](windows/README.md).
+
+Unlike the Linux version, `on` stops the desktop shell, so there is no local
+console left to type `off` into. Use RDP, SSH, or a scheduled task to run it,
+and preview everything first with `win-phone-mode on --dry-run`.
 
 ## Usage
 
